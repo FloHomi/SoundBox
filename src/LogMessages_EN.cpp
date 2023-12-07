@@ -151,7 +151,8 @@ const char wifiStaticIpConfigNotFoundInNvs[] = "Unable to find wifi-ip-configura
 const char wifiHostnameNotSet[] = "Unable to find hostname-configuration to NVS.";
 const char mqttConnFailed[] = "Unable to establish mqtt-connection, trying again: rc=%i (%d / %d)";
 const char restoredHostnameFromNvs[] = "Restored hostname from NVS: %s";
-const char currentVoltageMsg[] = "Current battery-voltage: %.2f V";
+const char currentBattVoltageMsg[] = "Current battery-voltage: %.2f V";
+const char currentSysVoltageMsg[] = "Current system-voltage: %.2f V";
 const char currentChargeMsg[] = "Current battery charge: %.2f %%";
 const char batteryCurrentMsg[] = "Power usage (Battery): %.2f mA";
 const char batteryTempMsg[] = "Battery temperature: %.2f °C";

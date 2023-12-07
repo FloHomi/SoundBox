@@ -81,7 +81,7 @@ void Battery_PublishMQTT() {
 }
 
 void Battery_LogStatus(void) {
-	Log_Printf(LOGLEVEL_INFO, currentVoltageMsg, Battery_GetVoltage());
+	Log_Printf(LOGLEVEL_INFO, currentBattVoltageMsg, Battery_GetVoltage());
 	Log_Printf(LOGLEVEL_INFO, currentChargeMsg, Battery_EstimateLevel() * 100);
 }
 
