@@ -13,15 +13,16 @@
 	//################## HARDWARE-PLATFORM ###############################
 	/* Make sure to also edit the configfile, that is specific for your platform.
 	If in doubts (your develboard is not listed) use HAL 1
-	1: Wemos Lolin32                        => settings-lolin32.h
-	2: ESP32-A1S Audiokit                   => settings-espa1s.h
-	3: Wemos Lolin D32                      => settings-lolin_D32.h
-	4: Wemos Lolin D32 pro                  => settings-lolin_D32_pro.h
-	5: Lilygo T8 (V1.7)                     => settings-ttgo_t8.h
-	6: ESPuino complete                     => settings-complete.h
-	7: Lolin D32 pro SDMMC Port-Expander    => settings-lolin_d32_pro_sdmmc_pe.h
-	8: AZDelivery ESP32 NodeMCU             => settings-azdelivery_sdmmc.h
-	9: Lolin D32 SDMMC Port-Expander        => settings-lolin_d32_sdmmc_pe.h
+	1:  Wemos Lolin32                        => settings-lolin32.h
+	2:  ESP32-A1S Audiokit                   => settings-espa1s.h
+	3:  Wemos Lolin D32                      => settings-lolin_D32.h
+	4:  Wemos Lolin D32 pro                  => settings-lolin_D32_pro.h
+	5:  Lilygo T8 (V1.7)                     => settings-ttgo_t8.h
+	6:  ESPuino complete                     => settings-complete.h
+	7:  Lolin D32 pro SDMMC Port-Expander    => settings-lolin_d32_pro_sdmmc_pe.h
+	8:  AZDelivery ESP32 NodeMCU             => settings-azdelivery_sdmmc.h
+	9:  Lolin D32 SDMMC Port-Expander        => settings-lolin_d32_sdmmc_pe.h
+	10: SoundBox							 => settings-soundbox_esp32.h
 	99: custom                              => settings-custom.h
 	more to come...
 	*/
@@ -334,6 +335,8 @@
 		#include "settings-azdelivery_sdmmc.h"              // Pre-configured settings for AZ Delivery ESP32 NodeMCU / Devkit C (https://forum.espuino.de/t/az-delivery-esp32-nodemcu-devkit-c-mit-sd-mmc-und-pn5180-als-rfid-leser/634)
 	#elif (HAL == 9)
 		#include "settings-lolin_d32_sdmmc_pe.h"            // Pre-configured settings for Lolin D32 (non-pro) with SDMMC + port-expander (https://forum.espuino.de/t/espuino-minid32-pro-lolin-d32-pro-mit-sd-mmc-und-port-expander-smd/866)
+	#elif (HAL == 10)
+		#include "settings-soundbox_esp32.h"				// Pre-configured settings for Soundbox ESP32 (https://forum.espuino.de/t/espuino-custom-mainboard/2264)
 	#elif (HAL == 99)
 		#include "settings-custom.h"                        // Contains all user-relevant settings custom-board
 	#endif
