@@ -1,5 +1,5 @@
-#ifndef __ESPUINO_SOUNDBOX_ESP32_H__
-	#define __ESPUINO_SOUNDBOX_ESP32_H__
+#ifndef __ESPUINO_SOUNDBOX_ESP32
+	#define __ESPUINO_SOUNDBOX_ESP32
 	#include "Arduino.h"
 
 	#include "Port.h"
@@ -87,7 +87,7 @@
 
 	// I2C-configuration (necessary at least for port-expander - don't change!)
 	#ifdef I2C_2_ENABLE
-		#define ext_IIC_CLK		0		// i2c-SCL (clock)   
+		#define ext_IIC_CLK			0		// i2c-SCL (clock)   
 		#define ext_IIC_DATA		5		// i2c-SDA (data) 
 	#endif
 
@@ -97,13 +97,16 @@
 	#define WAKEUP_BUTTON			4 		// Defines the button that is used to wake up ESPuino from deepsleep.
 
 	// (optional) Power-control
-	#define POWER					101          	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
-	//#define LOW_POWER				13         	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
-	//#define HIGH_POWER				101          	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
-	#if defined(LOW_POWER) || defined(HIGH_POWER) || defined(POWER)
+	#define POWER 					101
+	#if !defined(POWER)
+	#define LOW_POWER				13         	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
+	#define HIGH_POWER				101          	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
+	#endif // !defined(POWER)
+	#if defined(LOW_POWER) || defined(HIGH_POWER) || defined (POWER)
 		#define INVERT_POWER				// If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
 		//#warning "use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH"
 	#endif
+	
 
 	// (optional) Neopixel
 	#define LED_PIN				12		// GPIO for Neopixel-signaling
@@ -114,19 +117,6 @@
 		#define HP_DETECT		104         	// GPIO that detects, if there's a plug in the headphone jack or not
 	#endif
 
-	// (optional) Monitoring of battery-voltage via ADC
-	#ifdef MEASURE_BATTERY_VOLTAGE
-		#define VOLTAGE_READ_PIN	35		// GPIO used to monitor battery-voltage.
-		constexpr float referenceVoltage = 3.345;	// Reference-voltage (provided by dc-dc-converter)
-		constexpr float offsetVoltage = 0.25;		// If voltage measured by ESP isn't 100% accurate, you can add a correction-value here
-		constexpr uint16_t rdiv1 = 300;			// Rdiv1 of voltage-divider (kOhms)
-		constexpr uint16_t rdiv2 = 300;			// Rdiv2 of voltage-divider (kOhms) => used to measure voltage via ADC!
-	#endif
-
-	// (optional) hallsensor. Make sure the GPIO defined doesn't overlap with existing configuration. Please note: only user-support is provided for this feature.
-	#ifdef HALLEFFECT_SENSOR_ENABLE
-		#define HallEffectSensor_PIN	32		// GPIO that is used for hallsensor (ADC); user-support: https://forum.espuino.de/t/magnetische-hockey-tags/1449/35
-	#endif
 
 	// (Optional) remote control via infrared
 	#ifdef IR_CONTROL_ENABLE
@@ -149,7 +139,7 @@
 		#define RC_BLUETOOTH		0x72            // Command to enable/disable bluetooth
 		#define RC_FTP			0x65            // Command to enable FTP-server
 	#endif
-#endif //__ESPUINO_SOUNDBOX_ESP32_H__
+#endif // __ESPUINO_SOUNDBOX_ESP32
 
 
 
