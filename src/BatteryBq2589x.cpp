@@ -59,6 +59,8 @@ void Battery_InitInner() {
 		Log_Println("BQ2589X configuration failed", LOGLEVEL_ERROR);
 		return;
 	}
+	Log_Println("BQ2589X init configuration done", LOGLEVEL_INFO);
+
 }
 
 void Battery_CyclicInner() {

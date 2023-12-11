@@ -739,7 +739,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		ledObj["nightBrightness"].set(gPrefsSettings.getUChar("nLedBrightness", 0));
 	}
 #endif
-#ifdef MEASURE_BATTERY_VOLTAGE
+#ifdef MEASURE_BATTERY_ESP32
 	if ((section == "") || (section == "battery")) {
 		// battery settings
 		JsonObject batteryObj = obj.createNestedObject("battery");
@@ -760,7 +760,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		defaultsObj["initBrightness"].set(16u); // LED_INITIAL_BRIGHTNESS
 		defaultsObj["nightBrightness"].set(2u); // LED_INITIAL_NIGHT_BRIGHTNESS
 #endif
-#ifdef MEASURE_BATTERY_VOLTAGE
+#ifdef MEASURE_BATTERY_ESP32
 		defaultsObj["warnLowVoltage"].set(s_warningLowVoltage);
 		defaultsObj["indicatorLow"].set(s_voltageIndicatorLow);
 		defaultsObj["indicatorHi"].set(s_voltageIndicatorHigh);

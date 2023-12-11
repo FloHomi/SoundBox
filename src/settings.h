@@ -31,7 +31,7 @@
 
 
 	//########################## MODULES #################################
-	//#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
+	#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
 	//#define I2S_COMM_FMT_LSB_ENABLE       // Enables FMT instead of MSB for I2S-communication-format. Used e.g. by PT2811. Don't enable for MAX98357a, AC101 or PCM5102A)
 	#define MDNS_ENABLE                     // When enabled, you don't have to handle with ESPuino's IP-address. If hostname is set to "ESPuino", you can reach it via ESPuino.local
 	//#define MQTT_ENABLE                   // Make sure to configure mqtt-server and (optionally) username+pwd
@@ -43,7 +43,7 @@
 	#define HEADPHONE_ADJUST_ENABLE         // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
 	//#define PLAY_MONO_SPEAKER             // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
 	#define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
-	// #define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
+	// #define MEASURE_BATTERY_ESP32         // Enables battery-measurement via GPIO (ADC) and voltage-divider
 	//#define MEASURE_BATTERY_MAX17055      // Enables battery-measurement via external fuel gauge (MAX17055)
 	#define MEASURE_BATTERY_BQ2589X		  	// Enables battery-measurement via external Battery Manager (BQ2589X)
 	#define USE_SHIP_MODE_BQ2589X			// Enables ship mode for BQ2589X. Puts the whole system into a super power mode. (12µA consumption) Can only be woken up by pressing the QON button.
@@ -72,9 +72,9 @@
 
 
 	//################## select RFID reader ##############################
-	#define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
+	// #define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
 	//#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
-	//#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
+	#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
 
 	#ifdef RFID_READER_TYPE_MFRC522_I2C
 		#define MFRC522_ADDR 0x28           // default I2C-address of MFRC522
@@ -90,7 +90,7 @@
 
 
 	//############# Port-expander-configuration ######################
-	#ifdef PORT_EXPANDER_ENABLE
+	#if defined(PORT_EXPANDER_ENABLE)
 		constexpr uint8_t expanderI2cAddress = 0x20;  // I2C-address of PCA9555 (0x20 is true if PCA's pins A0+A1+A2 are pulled to GND)
 	#endif
 
@@ -226,12 +226,12 @@
 		//#define LED_OFFSET                		0           	// shifts the starting LED in the original direction of the neopixel ring
 	#endif
 
-	#if defined(MEASURE_BATTERY_VOLTAGE) || defined(MEASURE_BATTERY_MAX17055)
+	#if defined(MEASURE_BATTERY_ESP32) || defined(MEASURE_BATTERY_MAX17055) || defined(MEASURE_BATTERY_BQ2589X)
 		#define BATTERY_MEASURE_ENABLE                 // Don't change. Set automatically if any method of battery monitoring is selected.
 		constexpr uint8_t s_batteryCheckInterval = 10; // How often battery is measured (in minutes) (can be changed via GUI!)
 	#endif
 
-	#ifdef MEASURE_BATTERY_VOLTAGE
+	#ifdef MEASURE_BATTERY_ESP32
 		// (optional) Default-voltages for battery-monitoring via Neopixel; can be changed later via WebGUI
 		constexpr float s_warningLowVoltage = 3.4;                      // If battery-voltage is <= this value, a cyclic warning will be indicated by Neopixel (can be changed via GUI!)
 		constexpr float s_warningCriticalVoltage = 3.1;                 // If battery-voltage is <= this value, assume battery near-empty. Set to 0V to disable.
@@ -270,7 +270,7 @@
 	#endif // MEASURE_BATTERY_BQ2589X
 
 	// enable I2C if necessary
-	#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE) || defined(MEASURE_BATTERY_MAX17055)
+	#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE) || defined(MEASURE_BATTERY_MAX17055) || defined(MEASURE_BATTERY_BQ2589X) || defined(USE_SHIP_MODE_BQ2589X)
 		#define I2C_2_ENABLE
 	#endif
 
