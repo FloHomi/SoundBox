@@ -258,7 +258,7 @@
 		#define USE_NCR18650A_OR_B
 		//#define USE_CGR18650CH_2250
 		//#define USE_Sanyo_18650_2600
-
+		constexpr uint16_t s_min_sys_voltage_mV = 3500;                      // Minimum system voltage in mV. Even if Batt voltage goes below the sys voltage will be kept at this value
 		constexpr uint16_t s_warningLowVoltage_mV = 3400;                      // If battery-voltage is <= this value, a cyclic warning will be indicated by Neopixel (can be changed via GUI!)
 		constexpr uint16_t s_warningCriticalVoltage_mV = 3100;                 // If battery-voltage is <= this value, assume battery near-empty. Set to 0V to disable.
 		constexpr uint8_t s_batteryLow_pct = 15;            			// low percentage
