@@ -16,6 +16,12 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#if defined (USE_SHIP_MODE_BQ2589X)
+#include "BQ2589X.h"
+extern bq2589x BatteryManager;
+
+#endif
+
 constexpr const char prefsRfidNamespace[] = "rfidTags"; // Namespace used to save IDs of rfid-tags
 constexpr const char prefsSettingsNamespace[] = "settings"; // Namespace used for generic settings
 
@@ -232,7 +238,12 @@ void System_DeepSleepManager(void) {
 #endif
 		// goto sleep now
 		Log_Println("deep-sleep, good night.......", LOGLEVEL_NOTICE);
+#if defined (USE_SHIP_MODE_BQ2589X)
+		BatteryManager.enter_ship_mode();
+#else
 		esp_deep_sleep_start();
+#endif
+
 	}
 }
 
