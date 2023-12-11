@@ -52,7 +52,7 @@ void Battery_InitInner() {
 	delay(50); // wait for the adc to be ready
 
 	err |= BatteryManager.disable_otg();
-	BatteryManager.set_sys_min(s_min_sys_voltage_mV);); 
+	//BatteryManager.set_sys_min(s_min_sys_voltage_mV);
 	err |= BatteryManager.set_charge_current(s_batteryChargeCurrent_mA);
 	err |= BatteryManager.set_chargevoltage(s_batteryChargeVoltage_mV);
 	if(err != BQ2589X_OK) {
