@@ -8,7 +8,7 @@
 #include "System.h"
 
 // Only enable measurements if valid GPIO is used
-#if defined(MEASURE_BATTERY_VOLTAGE) && (VOLTAGE_READ_PIN >= 0 && VOLTAGE_READ_PIN <= 39)
+#if defined(MEASURE_BATTERY_ESP32) && (VOLTAGE_READ_PIN >= 0 && VOLTAGE_READ_PIN <= 39)
 constexpr uint16_t maxAnalogValue = 4095u; // Highest value given by analogRead(); don't change!
 
 float warningLowVoltage = s_warningLowVoltage;
@@ -105,7 +105,7 @@ bool Battery_IsCritical(void) {
 }
 
 #else
-	#ifdef MEASURE_BATTERY_VOLTAGE
+	#ifdef MEASURE_BATTERY_ESP32
 // add some dummy impls to make CI happy
 
 float warningLowVoltage = 0.4f;
