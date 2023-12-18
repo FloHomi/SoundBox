@@ -30,7 +30,7 @@
 #define RANDOM_SUBDIRECTORY_OF_DIRECTORY_ALL_TRACKS_OF_DIR_RANDOM 14 // Picks a random subdirectory from a given directory and do ALL_TRACKS_OF_DIR_RANDOM
 #define WEBSTREAM												  8 // Play webradio-stream
 #define LOCAL_M3U												  11 // Plays items (webstream or files) with addresses/paths from a local m3u-file
-#define BUSY													  10 // Used if playlist is created
+#define PLAYER_BUSY											      10 // Used if playlist is created
 
 // RFID-modifcation-types
 #define CMD_NOTHING						 0 // Do Nothing
@@ -66,6 +66,28 @@
 #define CMD_SEEK_BACKWARDS 181 // Command: jump backwards (time period to jump (in seconds) is configured via settings.h: jumpOffset)
 #define CMD_STOP		   182 // Command: stops playback
 #define CMD_RESTARTSYSTEM  183 // Command: restart System
+
+
+// Button press id emulations
+#define CMD_BUTTON_1_ID_SHORT	200 // Command: Button 1 short press
+#define CMD_BUTTON_1_ID_LONG	201 // Command: Button 1 long press
+#define CMD_BUTTON_2_ID_SHORT	202 // Command: Button 2 short press
+#define CMD_BUTTON_2_ID_LONG	203 // Command: Button 2 long press
+#define CMD_BUTTON_3_ID_SHORT	204 // Command: Button 3 short press
+#define CMD_BUTTON_3_ID_LONG	205 // Command: Button 3 long press
+#define CMD_BUTTON_4_ID_SHORT	206 // Command: Button 4 short press
+#define CMD_BUTTON_4_ID_LONG	207 // Command: Button 4 long press
+#define CMD_BUTTON_5_ID_SHORT	208 // Command: Button 5 short press
+#define CMD_BUTTON_5_ID_LONG	209 // Command: Button 5 long press
+#define CMD_BUTTON_6_ID_SHORT	210 // Command: Button 6 short press
+#define CMD_BUTTON_6_ID_LONG	211 // Command: Button 6 long press
+#define CMD_BUTTON_7_ID_SHORT	212 // Command: Button 7 short press
+#define CMD_BUTTON_7_ID_LONG	213 // Command: Button 7 long press
+#define CMD_BUTTON_8_ID_SHORT	214 // Command: Button 8 short press
+#define CMD_BUTTON_8_ID_LONG	215 // Command: Button 8 long press
+#define CMD_BUTTON_9_ID_SHORT	216 // Command: Button 9 short press
+#define CMD_BUTTON_9_ID_LONG	217 // Command: Button 9 long press
+
 
 // Repeat-Modes
 #define NO_REPEAT		 0 // No repeat

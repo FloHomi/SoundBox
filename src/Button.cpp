@@ -44,7 +44,7 @@ bool gButtonInitComplete = false;
 	#define EXPANDER_5_ENABLE
 #endif
 
-t_button gButtons[7]; // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
+t_button gButtons[TOTAL_BUTTON_COUNT+1]; // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
 uint8_t gShutdownButton = 99; // Helper used for Neopixel: stores button-number of shutdown-button
 uint16_t gLongPressTime = 0;
 

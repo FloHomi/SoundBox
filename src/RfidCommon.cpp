@@ -11,11 +11,12 @@
 #include "Rfid.h"
 #include "System.h"
 #include "Web.h"
+#include "String.h"
 
 unsigned long Rfid_LastRfidCheckTimestamp = 0;
-char gCurrentRfidTagId[cardIdStringSize] = ""; // No crap here as otherwise it could be shown in GUI
+char gCurrentId[ID_STRING_SIZE] = ""; // No crap here as otherwise it could be shown in GUI
 #ifdef DONT_ACCEPT_SAME_RFID_TWICE_ENABLE
-char gOldRfidTagId[cardIdStringSize] = "X"; // Init with crap
+char gOldRfidTagId[ID_STRING_SIZE] = "X"; // Init with crap
 #endif
 
 // check if we have RFID-reader enabled
@@ -26,28 +27,31 @@ char gOldRfidTagId[cardIdStringSize] = "X"; // Init with crap
 // Tries to lookup RFID-tag-string in NVS and extracts parameter from it if found
 void Rfid_PreferenceLookupHandler(void) {
 #if defined(RFID_READER_ENABLED)
-	BaseType_t rfidStatus;
-	char rfidTagId[cardIdStringSize];
+	char newId[ID_STRING_SIZE];
 	char _file[255];
 	uint32_t _lastPlayPos = 0;
 	uint16_t _trackLastPlayed = 0;
 	uint32_t _playMode = 1;
 
-	rfidStatus = xQueueReceive(gRfidCardQueue, &rfidTagId, 0);
-	if (rfidStatus == pdPASS) {
+	BaseType_t newQueueReceived = xQueueReceive(gRfidCardQueue, &newId, 0) == pdPASS;
+	if(newQueueReceived != pdPASS) { // If no new card was read, try to read button-queue, just one queue at a time
+    	newQueueReceived = xQueueReceive(gButtonIdQueue, &newId, 0) == pdPASS;
+	}
+
+	if (newQueueReceived) {
 		System_UpdateActivityTimer();
-		strncpy(gCurrentRfidTagId, rfidTagId, cardIdStringSize - 1);
-		Log_Printf(LOGLEVEL_INFO, "%s: %s", rfidTagReceived, gCurrentRfidTagId);
+		strncpy(gCurrentId, newId, ID_STRING_SIZE - 1);
+		Log_Printf(LOGLEVEL_INFO, "%s: %s", rfidTagReceived, gCurrentId);
 		Web_SendWebsocketData(0, 10); // Push new rfidTagId to all websocket-clients
-		String s = "-1";
-		if (gPrefsRfid.isKey(gCurrentRfidTagId)) {
-			s = gPrefsRfid.getString(gCurrentRfidTagId, "-1"); // Try to lookup rfidId in NVS
+		String idStr = "-1";
+		if (gPrefsRfid.isKey(gCurrentId)) {
+			idStr = gPrefsRfid.getString(gCurrentId, "-1"); // Try to lookup rfidId in NVS
 		}
-		if (!s.compareTo("-1")) {
+		if (!idStr.compareTo("-1")) {
 			Log_Println(rfidTagUnknownInNvs, LOGLEVEL_ERROR);
 			System_IndicateError();
 	#ifdef DONT_ACCEPT_SAME_RFID_TWICE_ENABLE
-			strncpy(gOldRfidTagId, gCurrentRfidTagId, cardIdStringSize - 1); // Even if not found in NVS: accept it as card last applied
+			strncpy(gOldRfidTagId, gCurrentId, ID_STRING_SIZE - 1); // Even if not found in NVS: accept it as card last applied
 	#endif
 			// allow to escape from bluetooth mode with an unknown card, switch back to normal mode
 			System_SetOperationMode(OPMODE_NORMAL);
@@ -56,7 +60,7 @@ void Rfid_PreferenceLookupHandler(void) {
 
 		char *token;
 		uint8_t i = 1;
-		token = strtok((char *) s.c_str(), stringDelimiter);
+		token = strtok((char *) idStr.c_str(), stringDelimiter);
 		while (token != NULL) { // Try to extract data from string after lookup
 			if (i == 1) {
 				strncpy(_file, token, sizeof(_file) / sizeof(_file[0]));
@@ -81,16 +85,16 @@ void Rfid_PreferenceLookupHandler(void) {
 				Cmd_Action(_playMode);
 			} else {
 	#ifdef DONT_ACCEPT_SAME_RFID_TWICE_ENABLE
-				if (strncmp(gCurrentRfidTagId, gOldRfidTagId, 12) == 0) {
-					Log_Printf(LOGLEVEL_ERROR, dontAccepctSameRfid, gCurrentRfidTagId);
+				if (strncmp(gCurrentId, gOldRfidTagId, ID_STRING_SIZE - 1) == 0) {
+					Log_Printf(LOGLEVEL_ERROR, dontAccepctSameRfid, gCurrentId);
 					// System_IndicateError(); // Enable to have shown error @neopixel every time
 					return;
 				} else {
-					strncpy(gOldRfidTagId, gCurrentRfidTagId, 12);
+					strncpy(gOldRfidTagId, gCurrentId, ID_STRING_SIZE - 1);
 				}
 	#endif
 	#ifdef MQTT_ENABLE
-				publishMqtt(topicRfidState, gCurrentRfidTagId, false);
+				publishMqtt(topicRfidState, gCurrentId, false);
 	#endif
 
 	#ifdef BLUETOOTH_ENABLE

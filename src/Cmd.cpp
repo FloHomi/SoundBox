@@ -12,6 +12,8 @@
 #include "Mqtt.h"
 #include "System.h"
 #include "Wlan.h"
+#include "Queues.h"
+
 
 void Cmd_Action(const uint16_t mod) {
 	switch (mod) {
@@ -394,6 +396,47 @@ void Cmd_Action(const uint16_t mod) {
 			AudioPlayer_TrackControlToQueueSender(STOP);
 			break;
 		}
+		case CMD_BUTTON_4_ID_SHORT: {
+			xQueueSend(gButtonIdQueue, "BTN4_SHORT", 0); 
+			break;
+		}
+		case CMD_BUTTON_4_ID_LONG: {
+			xQueueSend(gButtonIdQueue, "BTN4_LONG", 0); 
+			break;
+		}
+		case CMD_BUTTON_5_ID_SHORT: {
+			xQueueSend(gButtonIdQueue, "BTN5_SHORT", 0); 
+			break;
+		}
+		case CMD_BUTTON_5_ID_LONG: {
+			xQueueSend(gButtonIdQueue, "BTN5_LONG", 0); 
+			break;
+		}
+		case CMD_BUTTON_6_ID_SHORT: {
+			xQueueSend(gButtonIdQueue, "BTN6_SHORT", 0); 
+			break;
+		}
+		case CMD_BUTTON_6_ID_LONG: {
+			xQueueSend(gButtonIdQueue, "BTN6_LONG", 0); 
+			break;
+		}
+		case CMD_BUTTON_7_ID_SHORT: {
+			xQueueSend(gButtonIdQueue, "BTN7_SHORT", 0); 
+			break;
+		}
+		case CMD_BUTTON_7_ID_LONG: {
+			xQueueSend(gButtonIdQueue, "BTN7_LONG", 0); 
+			break;
+		}
+		case CMD_BUTTON_8_ID_SHORT: {
+			xQueueSend(gButtonIdQueue, "BTN8_SHORT", 0); 
+			break;
+		}
+		case CMD_BUTTON_8_ID_LONG: {
+			xQueueSend(gButtonIdQueue, "BTN8_LONG", 0); 
+			break;
+		}
+
 
 #ifdef ENABLE_ESPUINO_DEBUG
 		case PRINT_TASK_STATS: {

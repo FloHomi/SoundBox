@@ -113,6 +113,7 @@ const char httpReady[] = "HTTP-Server gestartet.";
 const char unableToMountSd[] = "SD-Karte konnte nicht gemountet werden.";
 const char unableToCreateVolQ[] = "Konnte Volume-Queue nicht anlegen.";
 const char unableToCreateRfidQ[] = "Konnte RFID-Queue nicht anlegen.";
+const char unableToCreateButtonQ[] = "Konnte Button-Queue nicht anlegen.";
 const char unableToCreateMgmtQ[] = "Konnte Play-Management-Queue nicht anlegen.";
 const char unableToCreatePlayQ[] = "Konnte Track-Queue nicht anlegen..";
 const char initialBrightnessfromNvs[] = "Initiale LED-Helligkeit wurde aus NVS geladen: %u";

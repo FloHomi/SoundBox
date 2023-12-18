@@ -27,7 +27,7 @@
 	more to come...
 	*/
 	#ifndef HAL             // Will be set by platformio.ini. If using Arduino-IDE you have to set HAL according your needs!
-		#define HAL 1       // HAL 1 = LoLin32, 2 = ESP32-A1S-AudioKit, 3 = Lolin D32, 4 = Lolin D32 pro; ... 99 = custom
+		#define HAL 10       // HAL 1 = LoLin32, 2 = ESP32-A1S-AudioKit, 3 = Lolin D32, 4 = Lolin D32 pro; ... 99 = custom
 	#endif
 
 
@@ -123,20 +123,47 @@
 		Please have a look at values.h to look up actions available (>=100 can be used)
 		If you don't want to assign an action or you don't use a given button: CMD_NOTHING has to be set
 	*/
+
+	#define TOTAL_BUTTON_COUNT 9 //next, previous, play/pause, encoder, button4, button5, button6, button7, button8
+
+	// Buttons (better leave unchanged if in doubts :-))
+	constexpr uint8_t buttonDebounceInterval = 50;                // Interval in ms to software-debounce buttons
+	constexpr uint16_t intervalToLongPress = 700;                 // Interval in ms to distinguish between short and long press of buttons
+
+	// Buttons active state: Default 0 for active LOW, 1 for active HIGH e.g. for TTP223 Capacitive Touch Switch Button (FinnBox)
+	#define BUTTON_0_ACTIVE_STATE 0
+	#define BUTTON_1_ACTIVE_STATE 0
+	#define BUTTON_2_ACTIVE_STATE 0
+	#define BUTTON_3_ACTIVE_STATE 0
+	#define BUTTON_4_ACTIVE_STATE 0
+	#define BUTTON_5_ACTIVE_STATE 0
+	#define BUTTON_6_ACTIVE_STATE 0
+	#define BUTTON_7_ACTIVE_STATE 0
+	#define BUTTON_8_ACTIVE_STATE 0
+
+
 	// *****BUTTON*****        *****ACTION*****
 	#define BUTTON_0_SHORT    CMD_NEXTTRACK
 	#define BUTTON_1_SHORT    CMD_PREVTRACK
 	#define BUTTON_2_SHORT    CMD_PLAYPAUSE
 	#define BUTTON_3_SHORT    CMD_MEASUREBATTERY
-	#define BUTTON_4_SHORT    CMD_SEEK_BACKWARDS
-	#define BUTTON_5_SHORT    CMD_SEEK_FORWARDS
+	#define BUTTON_4_SHORT    CMD_BUTTON_4_ID_SHORT
+	#define BUTTON_5_SHORT    CMD_BUTTON_5_ID_SHORT
+	#define BUTTON_6_SHORT 	  CMD_BUTTON_6_ID_SHORT
+	#define BUTTON_7_SHORT 	  CMD_BUTTON_7_ID_SHORT
+	#define BUTTON_8_SHORT 	  CMD_BUTTON_8_ID_SHORT
+
 
 	#define BUTTON_0_LONG     CMD_LASTTRACK
 	#define BUTTON_1_LONG     CMD_FIRSTTRACK
 	#define BUTTON_2_LONG     CMD_PLAYPAUSE
 	#define BUTTON_3_LONG     CMD_SLEEPMODE
-	#define BUTTON_4_LONG     CMD_VOLUMEUP
-	#define BUTTON_5_LONG     CMD_VOLUMEDOWN
+	#define BUTTON_4_LONG     CMD_NOTHING
+	#define BUTTON_5_LONG     CMD_NOTHING
+	#define BUTTON_6_LONG 	  CMD_NOTHING
+	#define BUTTON_7_LONG 	  CMD_NOTHING
+	#define BUTTON_8_LONG 	  CMD_NOTHING
+
 
 	#define BUTTON_MULTI_01   CMD_NOTHING   //CMD_TOGGLE_WIFI_STATUS (disabled now to prevent children from unwanted WiFi-disable)
 	#define BUTTON_MULTI_02   CMD_ENABLE_FTP_SERVER
@@ -153,6 +180,7 @@
 	#define BUTTON_MULTI_34   CMD_NOTHING
 	#define BUTTON_MULTI_35   CMD_NOTHING
 	#define BUTTON_MULTI_45   CMD_NOTHING
+	
 
 	//#################### Various settings ##############################
 
@@ -169,17 +197,7 @@
 		#define DNS_IP     192,168,2,1                  // DNS-server of your network; in private networks it's usually the gatewy's IP
 	#endif
 
-	// Buttons (better leave unchanged if in doubts :-))
-	constexpr uint8_t buttonDebounceInterval = 50;                // Interval in ms to software-debounce buttons
-	constexpr uint16_t intervalToLongPress = 700;                 // Interval in ms to distinguish between short and long press of buttons
 
-	// Buttons active state: Default 0 for active LOW, 1 for active HIGH e.g. for TTP223 Capacitive Touch Switch Button (FinnBox)
-	#define BUTTON_0_ACTIVE_STATE 0
-	#define BUTTON_1_ACTIVE_STATE 0
-	#define BUTTON_2_ACTIVE_STATE 0
-	#define BUTTON_3_ACTIVE_STATE 0
-	#define BUTTON_4_ACTIVE_STATE 0
-	#define BUTTON_5_ACTIVE_STATE 0
 
 	//#define CONTROLS_LOCKED_BY_DEFAULT			// If set the controls are locked at boot
 	#define INCLUDE_ROTARY_IN_CONTROLS_LOCK			// If set the rotary encoder is locked if controls are locked

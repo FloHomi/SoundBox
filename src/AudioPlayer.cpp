@@ -152,7 +152,7 @@ static uint32_t lastPlayingTimestamp = 0;
 
 void AudioPlayer_Cyclic(void) {
 	AudioPlayer_HeadphoneVolumeManager();
-	if ((millis() - lastPlayingTimestamp >= 1000) && gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != BUSY && !gPlayProperties.pausePlay) {
+	if ((millis() - lastPlayingTimestamp >= 1000) && gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != PLAYER_BUSY && !gPlayProperties.pausePlay) {
 		// audio is playing, update the playtime since start
 		lastPlayingTimestamp = millis();
 		playTimeSecSinceStart += 1;
@@ -387,8 +387,8 @@ void AudioPlayer_Task(void *parameter) {
 
 				// If we're in audiobook-mode and apply a modification-card, we don't
 				// want to save lastPlayPosition for the mod-card but for the card that holds the playlist
-				if (gCurrentRfidTagId != NULL) {
-					strncpy(gPlayProperties.playRfidTag, gCurrentRfidTagId, sizeof(gPlayProperties.playRfidTag) / sizeof(gPlayProperties.playRfidTag[0]));
+				if (gCurrentId != NULL) {
+					strncpy(gPlayProperties.playRfidTag, gCurrentId, sizeof(gPlayProperties.playRfidTag) / sizeof(gPlayProperties.playRfidTag[0]));
 				}
 			}
 			if (gPlayProperties.trackFinished) {
@@ -416,7 +416,7 @@ void AudioPlayer_Task(void *parameter) {
 			}
 
 			if (gPlayProperties.playlistFinished && trackCommand != NO_ACTION) {
-				if (gPlayProperties.playMode != BUSY) { // Prevents from staying in mode BUSY forever when error occured (e.g. directory empty that should be played)
+				if (gPlayProperties.playMode != PLAYER_BUSY) { // Prevents from staying in mode BUSY forever when error occured (e.g. directory empty that should be played)
 					Log_Println(noPlaymodeChangeIfIdle, LOGLEVEL_NOTICE);
 					trackCommand = NO_ACTION;
 					System_IndicateError();
@@ -804,7 +804,7 @@ void AudioPlayer_Task(void *parameter) {
 		}
 
 		// If error occured: remove playlist from ESPuino
-		if (gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != BUSY && !audio->isRunning() && !gPlayProperties.pausePlay) {
+		if (gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != PLAYER_BUSY && !audio->isRunning() && !gPlayProperties.pausePlay) {
 			if (settleCount++ == 50) { // Hack to give audio some time to settle down after playlist was generated
 				gPlayProperties.playlistFinished = true;
 				gPlayProperties.playMode = NO_PLAYLIST;
@@ -873,7 +873,7 @@ void AudioPlayer_VolumeToQueueSender(const int32_t _newVolume, bool reAdjustRota
 // Pauses playback if playback is active and volume is changes from minVolume+1 to minVolume (usually 0)
 void AudioPlayer_PauseOnMinVolume(const uint8_t oldVolume, const uint8_t newVolume) {
 #ifdef PAUSE_ON_MIN_VOLUME
-	if (gPlayProperties.playMode == BUSY || gPlayProperties.playMode == NO_PLAYLIST) {
+	if (gPlayProperties.playMode == PLAYER_BUSY || gPlayProperties.playMode == NO_PLAYLIST) {
 		return;
 	}
 
@@ -937,7 +937,7 @@ void AudioPlayer_TrackQueueDispatcher(const char *_itemToPlay, const uint32_t _l
 		return;
 	}
 
-	gPlayProperties.playMode = BUSY; // Show @Neopixel, if uC is busy with creating playlist
+	gPlayProperties.playMode = PLAYER_BUSY; // Show @Neopixel, if uC is busy with creating playlist
 	if (!strcmp(*(musicFiles - 1), "0")) {
 		Log_Println(noMp3FilesInDir, LOGLEVEL_NOTICE);
 		System_IndicateError();
@@ -964,7 +964,7 @@ void AudioPlayer_TrackQueueDispatcher(const char *_itemToPlay, const uint32_t _l
 
 #ifdef PLAY_LAST_RFID_AFTER_REBOOT
 	// Store last RFID-tag to NVS
-	gPrefsSettings.putString("lastRfid", gCurrentRfidTagId);
+	gPrefsSettings.putString("lastRfid", gCurrentId);
 #endif
 
 	switch (gPlayProperties.playMode) {

@@ -1,9 +1,18 @@
 #pragma once
 
-constexpr uint8_t cardIdSize = 4u;
-constexpr uint8_t cardIdStringSize = (cardIdSize * 3u) + 1u;
 
-extern char gCurrentRfidTagId[cardIdStringSize];
+constexpr uint8_t cardIdSize = 4u;
+constexpr uint8_t CARD_ID_STR_SIZE = (cardIdSize * 3u) + 1u;
+constexpr uint8_t BUTTON_ID_STR_SIZE = 12; //sizeof("BTNxx_SHORT") + 1u;
+
+
+#if CARD_ID_STR_SIZE > BUTTON_ID_STR_SIZE
+	constexpr uint8_t ID_STRING_SIZE = CARD_ID_STR_SIZE;
+#else
+	constexpr uint8_t ID_STRING_SIZE = BUTTON_ID_STR_SIZE;
+#endif
+
+extern char gCurrentId[ID_STRING_SIZE];
 
 #ifndef PAUSE_WHEN_RFID_REMOVED
 	#ifdef DONT_ACCEPT_SAME_RFID_TWICE // ignore feature silently if PAUSE_WHEN_RFID_REMOVED is active

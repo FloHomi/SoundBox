@@ -8,6 +8,7 @@ QueueHandle_t gVolumeQueue;
 QueueHandle_t gTrackQueue;
 QueueHandle_t gTrackControlQueue;
 QueueHandle_t gRfidCardQueue;
+QueueHandle_t gButtonIdQueue;
 
 void Queues_Init(void) {
 	// Create queues
@@ -16,9 +17,14 @@ void Queues_Init(void) {
 		Log_Println(unableToCreateVolQ, LOGLEVEL_ERROR);
 	}
 
-	gRfidCardQueue = xQueueCreate(1, cardIdStringSize);
+	gRfidCardQueue = xQueueCreate(1, ID_STRING_SIZE);
 	if (gRfidCardQueue == NULL) {
 		Log_Println(unableToCreateRfidQ, LOGLEVEL_ERROR);
+	}
+
+	gButtonIdQueue = xQueueCreate(1, ID_STRING_SIZE);
+	if (gButtonIdQueue == NULL) {
+		Log_Println(unableToCreateButtonQ, LOGLEVEL_ERROR);
 	}
 
 	gTrackControlQueue = xQueueCreate(1, sizeof(uint8_t));

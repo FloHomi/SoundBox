@@ -698,7 +698,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		// current values
 		JsonObject curObj = obj.createNestedObject("current");
 		curObj["volume"].set(AudioPlayer_GetCurrentVolume());
-		curObj["rfidTagId"] = String(gCurrentRfidTagId);
+		curObj["rfidTagId"] = String(gCurrentId);
 	}
 	if ((section == "") || (section == "general")) {
 		// general settings
@@ -959,7 +959,7 @@ void Web_SendWebsocketData(uint32_t client, uint8_t code) {
 	} else if (code == 2) {
 		object["status"] = "error";
 	} else if (code == 10) {
-		object["rfidId"] = gCurrentRfidTagId;
+		object["rfidId"] = gCurrentId;
 	} else if (code == 20) {
 		object["pong"] = "pong";
 		object["rssi"] = Wlan_GetRssi();

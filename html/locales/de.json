@@ -111,8 +111,8 @@
             "progress": "{{percent}}% ({{speed}} KB/s), {{remaining.value}} {{remaining.unit}} verbleibend.."
         },
         "rfid": {
-            "title": "RFID-Zuweisungen",
-            "idNumber": "RFID-Chip-Nummer (12-stellig)",
+            "title": "ID-Zuweisungen",
+            "idNumber": "RFID-Chip-Nummer oder BNTxx_SHORT/LONG (12 Zeichen max.)",
             "music": "Musik",
             "modification": "Modifikation",
             "savedassignments": "Gespeicherte RFID-Zuweisungen",
