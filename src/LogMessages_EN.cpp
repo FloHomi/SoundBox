@@ -113,6 +113,7 @@ const char httpReady[] = "Started HTTP-server.";
 const char unableToMountSd[] = "Unable to mount sd-card.";
 const char unableToCreateVolQ[] = "Unable to create volume-queue.";
 const char unableToCreateRfidQ[] = "Unable to create RFID-queue.";
+const char unableToCreateButtonQ[] = "Unable to create button-queue.";
 const char unableToCreateMgmtQ[] = "Unable to play-management-queue.";
 const char unableToCreatePlayQ[] = "Unable to create track-queue..";
 const char initialBrightnessfromNvs[] = "Restoring initial LED-brightness from NVS: %u";

@@ -34,6 +34,12 @@ bool Port_AllowInitReadFromPortExpander = true;
 	#endif
 #endif
 
+#if defined(INVERT_POWER)
+	#define POWER_INVERT  true
+#else
+	#define POWER_INVERT  false
+#endif
+
 void Port_Init(void) {
 #ifdef PORT_EXPANDER_ENABLE
 	Port_Test();
@@ -146,42 +152,22 @@ void Port_Write(const uint8_t _channel, const bool _newState, const bool _initGp
 #ifdef PORT_EXPANDER_ENABLE
 // Translates digitalWrite-style "GPIO" to bit
 uint8_t Port_ChannelToBit(const uint8_t _channel) {
-	switch (_channel) {
-		case 100:
-		case 108:
-			return 0;
-			break;
-		case 101:
-		case 109:
-			return 1;
-			break;
-		case 102:
-		case 110:
-			return 2;
-			break;
-		case 103:
-		case 111:
-			return 3;
-			break;
-		case 104:
-		case 112:
-			return 4;
-			break;
-		case 105:
-		case 113:
-			return 5;
-			break;
-		case 106:
-		case 114:
-			return 6;
-			break;
-		case 107:
-		case 115:
-			return 7;
-			break;
+    if (_channel >= 100 && _channel <= 115) {
+        return (_channel - 100) % 8;
+    } else {
+        return 255; // not valid!
+    }
+}
 
-		default:
-			return 255; // not valid!
+void configMaskForOutput(uint16_t* IOMask, uint16_t* stateMask, uint8_t channel, bool invert) {
+	if(channel >= 100 && channel <= 115){
+		channel -= 100;
+		if(invert){
+			*stateMask |= (1 << channel);
+		}else{
+			*stateMask &= ~(1 << channel);
+		}	
+		*IOMask &= ~(1 << channel);
 	}
 }
 
@@ -189,136 +175,105 @@ uint8_t Port_ChannelToBit(const uint8_t _channel) {
 // If no output-channel is necessary, nothing has to be configured as all channels are in input-mode as per default (255)
 // So every bit representing an output-channel needs to be set to 0.
 void Port_WriteInitMaskForOutputChannels(void) {
-	const uint8_t portBaseValueBitMask = 255;
-	const uint8_t portsToWrite = 2;
-	uint8_t OutputBitMaskInOutAsPerPort[portsToWrite] = {portBaseValueBitMask, portBaseValueBitMask}; // 255 => all channels set to input; [0]: port0, [1]: port1
-	uint8_t OutputBitMaskLowHighAsPerPort[portsToWrite] = {0x00, 0x00}; // Bit configured as 0 for an output-channels means: logic LOW
+	uint16_t ioMask = 0xFFFF; // 0xFFFF => all channels set to input;
+	uint16_t stateMask = 0x0000; // Bit configured as 0 for an output-channels means: logic LOW
 
-	#ifdef GPIO_PA_EN // Set as output to enable/disable amp for loudspeaker
-	if (GPIO_PA_EN >= 100 && GPIO_PA_EN <= 107) {
-		// Bits of channels to be configured as input are 1 by default.
-		// So in order to change I/O-direction to output we need to set those bits to 0.
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(GPIO_PA_EN));
-	} else if (GPIO_PA_EN >= 108 && GPIO_PA_EN <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(GPIO_PA_EN));
-	}
+	#if defined(GPIO_PA_EN) // Set as output to enable/disable amp for loudspeaker
+	configMaskForOutput(&ioMask, &stateMask, GPIO_PA_EN, false);
 	#endif
 
-	#ifdef GPIO_HP_EN // Set as output to enable/disable amp for headphones
-	if (GPIO_HP_EN >= 100 && GPIO_HP_EN <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(GPIO_HP_EN));
-	} else if (GPIO_HP_EN >= 108 && GPIO_HP_EN <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(GPIO_HP_EN));
-	}
+	#if defined( GPIO_HP_EN) // Set as output to enable/disable amp for headphones
+	configMaskForOutput(&ioMask, &stateMask, GPIO_HP_EN, false);
 	#endif
 
-	#ifdef POWER // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
-	if (POWER >= 100 && POWER <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(POWER));
-	} else if (POWER >= 108 && POWER <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(POWER));
-	}
+	#if defined(POWER) // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
+	configMaskForOutput(&ioMask, &stateMask, POWER, POWER_INVERT);
+
+	#elif defined(LOW_POWER) && defined(HIGH_POWER)
+	configMaskForOutput(&ioMask, &stateMask, LOW_POWER, POWER_INVERT);
+	configMaskForOutput(&ioMask, &stateMask, HIGH_POWER, POWER_INVERT);
+	#endif // defined(POWER)
+
+	#if defined(BUTTONS_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTONS_LED, false);
+	#endif
+	#if defined(BUTTON0_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON0_LED, false);
+	#endif
+	#if defined(BUTTON1_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON1_LED, false);
+	#endif
+	#if defined(BUTTON2_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON2_LED, false);
 	#endif
 
-	#ifdef BUTTONS_LED
-	if (BUTTONS_LED >= 100 && BUTTONS_LED <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(BUTTONS_LED));
-	} else if (BUTTONS_LED >= 108 && BUTTONS_LED <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(BUTTONS_LED));
-	}
-	#endif
 
-	// Only change port-config if necessary (at least bitmask changed from base-default for one port)
-	if ((OutputBitMaskInOutAsPerPort[0] != portBaseValueBitMask) || (OutputBitMaskInOutAsPerPort[1] != portBaseValueBitMask)) {
-		i2cBusTwo.beginTransmission(expanderI2cAddress);
-		i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-		for (uint8_t i = 0; i < portsToWrite; i++) {
-			i2cBusTwo.write(OutputBitMaskInOutAsPerPort[i]);
-			// Serial.printf("Register %u - Mask: %u\n", 0x06+i, OutputBitMaskInOutAsPerPort[i]);
-		}
-		i2cBusTwo.endTransmission();
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.endTransmission();
 
-		// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
-		i2cBusTwo.beginTransmission(expanderI2cAddress);
-		i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-		i2cBusTwo.write(OutputBitMaskLowHighAsPerPort[0]); // port0
-		i2cBusTwo.write(OutputBitMaskLowHighAsPerPort[1]); // port1
-		i2cBusTwo.endTransmission();
-	}
+	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.endTransmission();
+	
 }
 
 // Some channels are configured as output before shutdown in order to avoid unwanted interrupts while ESP32 sleeps
 void Port_MakeSomeChannelsOutputForShutdown(void) {
-	const uint8_t portBaseValueBitMask = 255;
-	const uint8_t portsToWrite = 2;
-	uint8_t OutputBitMaskInOutAsPerPort[portsToWrite] = {portBaseValueBitMask, portBaseValueBitMask}; // 255 => all channels set to input; [0]: port0, [1]: port1
-	uint8_t OutputBitMaskLowHighAsPerPort[portsToWrite] = {0x00, 0x00};
+	uint16_t ioMask = 0xFFFF; // 0xFFFF => all channels set to input;
+	uint16_t stateMask = 0x0000; // Bit configured as 0 for an output-channels means: logic LOW
 
-	#ifdef HP_DETECT // https://forum.espuino.de/t/lolin-d32-pro-mit-sd-mmc-pn5180-max-fuenf-buttons-und-port-expander-smd/638/33
-	if (HP_DETECT >= 100 && HP_DETECT <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(HP_DETECT));
-	} else if (HP_DETECT >= 108 && HP_DETECT <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(HP_DETECT));
-	}
+	#if defined(HP_DETECT) // https://forum.espuino.de/t/lolin-d32-pro-mit-sd-mmc-pn5180-max-fuenf-buttons-und-port-expander-smd/638/33
+	configMaskForOutput(&ioMask, &stateMask, HP_DETECT, false);
 	#endif
 
 	// There's no possibility to get current I/O-status from PCA9555. So we just re-set it again for OUTPUT-pins.
-	#ifdef GPIO_PA_EN
-	if (GPIO_PA_EN >= 100 && GPIO_PA_EN <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(GPIO_PA_EN));
-	} else if (GPIO_PA_EN >= 108 && GPIO_PA_EN <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(GPIO_PA_EN));
-	}
+	#if defined(GPIO_PA_EN)
+	configMaskForOutput(&ioMask, &stateMask, GPIO_PA_EN, false);
 	#endif
 
-	#ifdef GPIO_HP_EN
-	if (GPIO_HP_EN >= 100 && GPIO_HP_EN <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(GPIO_HP_EN));
-	} else if (GPIO_HP_EN >= 108 && GPIO_HP_EN <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(GPIO_HP_EN));
-	}
+	#if defined(GPIO_HP_EN)
+	configMaskForOutput(&ioMask, &stateMask, GPIO_HP_EN, false);
 	#endif
 
-	#ifdef POWER // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
-	if (POWER >= 100 && POWER <= 107) {
-		#ifdef INVERT_POWER
-		OutputBitMaskLowHighAsPerPort[0] |= (1 << Port_ChannelToBit(POWER));
-		#else
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(POWER));
-		#endif
-	} else if (POWER >= 108 && POWER <= 115) {
-		#ifdef INVERT_POWER
-		OutputBitMaskLowHighAsPerPort[1] |= (1 << Port_ChannelToBit(POWER));
-		#else
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(POWER));
-		#endif
-	}
+	#if defined(POWER) // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
+	configMaskForOutput(&ioMask, &stateMask, POWER, POWER_INVERT);
+	#endif
+	#if defined(LOW_POWER) && defined(HIGH_POWER)
+	configMaskForOutput(&ioMask, &stateMask, LOW_POWER, POWER_INVERT);
+	configMaskForOutput(&ioMask, &stateMask, HIGH_POWER, POWER_INVERT);
 	#endif
 
-	#ifdef BUTTONS_LED
-	if (BUTTONS_LED >= 100 && BUTTONS_LED <= 107) {
-		OutputBitMaskInOutAsPerPort[0] &= ~(1 << Port_ChannelToBit(BUTTONS_LED));
-	} else if (BUTTONS_LED >= 108 && BUTTONS_LED <= 115) {
-		OutputBitMaskInOutAsPerPort[1] &= ~(1 << Port_ChannelToBit(BUTTONS_LED));
-	}
+	#if defined(BUTTONS_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTONS_LED, false);
+	#endif
+	#if defined(BUTTON0_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON0_LED, false);
+	#endif
+	#if defined(BUTTON1_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON1_LED, false);
+	#endif
+	#if defined(BUTTON2_LED)
+	configMaskForOutput(&ioMask, &stateMask, BUTTON2_LED, false);
 	#endif
 
-	// Only change port-config if necessary (at least bitmask changed from base-default for one port)
-	if ((OutputBitMaskInOutAsPerPort[0] != portBaseValueBitMask) || (OutputBitMaskInOutAsPerPort[1] != portBaseValueBitMask)) {
-		i2cBusTwo.beginTransmission(expanderI2cAddress);
-		i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-		for (uint8_t i = 0; i < portsToWrite; i++) {
-			i2cBusTwo.write(OutputBitMaskInOutAsPerPort[i]);
-		}
-		i2cBusTwo.endTransmission();
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.endTransmission();
 
-		// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
-		i2cBusTwo.beginTransmission(expanderI2cAddress);
-		i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-		i2cBusTwo.write(OutputBitMaskLowHighAsPerPort[0]); // port0
-		i2cBusTwo.write(OutputBitMaskLowHighAsPerPort[1]); // port1
-		i2cBusTwo.endTransmission();
-	}
+	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.endTransmission();
 }
 
 // Reads input-registers from port-expander and writes output into global cache-array

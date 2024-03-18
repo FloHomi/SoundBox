@@ -108,11 +108,11 @@
             "minutes_other": "minutes",
             "seconds": "seconds",
             "fewSec": "few",
-            "progress": "{{percent}}% ({{speed}} KB/s), {{remaining.value}} {{remaining.unit}} remaining.."
+            "progress": "{{percent}}% ({{speed}} KB/s), {{remaining.value}} {{remaining.unit}} remaining.."  
         },
         "rfid": {
-            "title": "RFID-Assignments",
-            "idNumber": "RFID-number (12 digits)",
+            "title": "ID-Assignments",
+            "idNumber": "RFID-Chip-Number or BNTxx_SHORT/LONG (12 chars max.)",
             "music": "Music",
             "modification": "Modification",
             "savedassignments": "Saved RFID-assignments",

@@ -698,7 +698,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		// current values
 		JsonObject curObj = obj.createNestedObject("current");
 		curObj["volume"].set(AudioPlayer_GetCurrentVolume());
-		curObj["rfidTagId"] = String(gCurrentRfidTagId);
+		curObj["rfidTagId"] = String(gCurrentId);
 	}
 	if ((section == "") || (section == "general")) {
 		// general settings
@@ -739,7 +739,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		ledObj["nightBrightness"].set(gPrefsSettings.getUChar("nLedBrightness", 0));
 	}
 #endif
-#ifdef MEASURE_BATTERY_VOLTAGE
+#ifdef MEASURE_BATTERY_ESP32
 	if ((section == "") || (section == "battery")) {
 		// battery settings
 		JsonObject batteryObj = obj.createNestedObject("battery");
@@ -760,7 +760,7 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		defaultsObj["initBrightness"].set(16u); // LED_INITIAL_BRIGHTNESS
 		defaultsObj["nightBrightness"].set(2u); // LED_INITIAL_NIGHT_BRIGHTNESS
 #endif
-#ifdef MEASURE_BATTERY_VOLTAGE
+#ifdef MEASURE_BATTERY_ESP32
 		defaultsObj["warnLowVoltage"].set(s_warningLowVoltage);
 		defaultsObj["indicatorLow"].set(s_voltageIndicatorLow);
 		defaultsObj["indicatorHi"].set(s_voltageIndicatorHigh);
@@ -959,7 +959,7 @@ void Web_SendWebsocketData(uint32_t client, uint8_t code) {
 	} else if (code == 2) {
 		object["status"] = "error";
 	} else if (code == 10) {
-		object["rfidId"] = gCurrentRfidTagId;
+		object["rfidId"] = gCurrentId;
 	} else if (code == 20) {
 		object["pong"] = "pong";
 		object["rssi"] = Wlan_GetRssi();

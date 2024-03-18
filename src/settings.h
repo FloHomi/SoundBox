@@ -32,7 +32,7 @@
 
 
 	//########################## MODULES #################################
-	//#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
+	#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
 	//#define I2S_COMM_FMT_LSB_ENABLE       // Enables FMT instead of MSB for I2S-communication-format. Used e.g. by PT2811. Don't enable for MAX98357a, AC101 or PCM5102A)
 	#define MDNS_ENABLE                     // When enabled, you don't have to handle with ESPuino's IP-address. If hostname is set to "ESPuino", you can reach it via ESPuino.local
 	//#define MQTT_ENABLE                   // Make sure to configure mqtt-server and (optionally) username+pwd
@@ -41,10 +41,10 @@
 	//#define NEOPIXEL_REVERSE_ROTATION     // Some Neopixels are adressed/soldered counter-clockwise. This can be configured here.
 	#define LANGUAGE DE                     // DE = deutsch; EN = english
 	//#define STATIC_IP_ENABLE              // DEPRECATED: Enables static IP-configuration (change static ip-section accordingly)
-	#define HEADPHONE_ADJUST_ENABLE         // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
+	//define HEADPHONE_ADJUST_ENABLE         // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
 	//#define PLAY_MONO_SPEAKER             // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
 	#define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
-	//#define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
+	//#define MEASURE_BATTERY_ESP32         // Enables battery-measurement via GPIO (ADC) and voltage-divider
 	//#define MEASURE_BATTERY_MAX17055      // Enables battery-measurement via external fuel gauge (MAX17055)
 	#define MEASURE_BATTERY_BQ2589X		  	// Enables battery-measurement via external Battery Manager (BQ2589X)
 	#define USE_SHIP_MODE_BQ2589X			// Enables ship mode for BQ2589X. Puts the whole system into a super power mode. (12µA consumption) Can only be woken up by pressing the QON button.
@@ -74,9 +74,9 @@
 
 
 	//################## select RFID reader ##############################
-	#define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
+	// #define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
 	//#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
-	//#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
+	#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
 
 	#ifdef RFID_READER_TYPE_MFRC522_I2C
 		#define MFRC522_ADDR 0x28           // default I2C-address of MFRC522
@@ -92,7 +92,7 @@
 
 
 	//############# Port-expander-configuration ######################
-	#ifdef PORT_EXPANDER_ENABLE
+	#if defined(PORT_EXPANDER_ENABLE)
 		constexpr uint8_t expanderI2cAddress = 0x20;  // I2C-address of PCA9555 (0x20 is true if PCA's pins A0+A1+A2 are pulled to GND)
 	#endif
 
@@ -123,20 +123,47 @@
 		Please have a look at values.h to look up actions available (>=100 can be used)
 		If you don't want to assign an action or you don't use a given button: CMD_NOTHING has to be set
 	*/
+
+	#define TOTAL_BUTTON_COUNT 9 //next, previous, play/pause, encoder, button4, button5, button6, button7, button8
+
+	// Buttons (better leave unchanged if in doubts :-))
+	constexpr uint8_t buttonDebounceInterval = 50;                // Interval in ms to software-debounce buttons
+	constexpr uint16_t intervalToLongPress = 700;                 // Interval in ms to distinguish between short and long press of buttons
+
+	// Buttons active state: Default 0 for active LOW, 1 for active HIGH e.g. for TTP223 Capacitive Touch Switch Button (FinnBox)
+	#define BUTTON_0_ACTIVE_STATE 0
+	#define BUTTON_1_ACTIVE_STATE 0
+	#define BUTTON_2_ACTIVE_STATE 0
+	#define BUTTON_3_ACTIVE_STATE 0
+	#define BUTTON_4_ACTIVE_STATE 0
+	#define BUTTON_5_ACTIVE_STATE 0
+	#define BUTTON_6_ACTIVE_STATE 0
+	#define BUTTON_7_ACTIVE_STATE 0
+	#define BUTTON_8_ACTIVE_STATE 0
+
+
 	// *****BUTTON*****        *****ACTION*****
 	#define BUTTON_0_SHORT    CMD_NEXTTRACK
 	#define BUTTON_1_SHORT    CMD_PREVTRACK
 	#define BUTTON_2_SHORT    CMD_PLAYPAUSE
 	#define BUTTON_3_SHORT    CMD_MEASUREBATTERY
-	#define BUTTON_4_SHORT    CMD_SEEK_BACKWARDS
-	#define BUTTON_5_SHORT    CMD_SEEK_FORWARDS
+	#define BUTTON_4_SHORT    CMD_BUTTON_4_ID_SHORT
+	#define BUTTON_5_SHORT    CMD_BUTTON_5_ID_SHORT
+	#define BUTTON_6_SHORT 	  CMD_BUTTON_6_ID_SHORT
+	#define BUTTON_7_SHORT 	  CMD_BUTTON_7_ID_SHORT
+	#define BUTTON_8_SHORT 	  CMD_BUTTON_8_ID_SHORT
+
 
 	#define BUTTON_0_LONG     CMD_LASTTRACK
 	#define BUTTON_1_LONG     CMD_FIRSTTRACK
 	#define BUTTON_2_LONG     CMD_PLAYPAUSE
 	#define BUTTON_3_LONG     CMD_SLEEPMODE
-	#define BUTTON_4_LONG     CMD_VOLUMEUP
-	#define BUTTON_5_LONG     CMD_VOLUMEDOWN
+	#define BUTTON_4_LONG     CMD_NOTHING
+	#define BUTTON_5_LONG     CMD_NOTHING
+	#define BUTTON_6_LONG 	  CMD_NOTHING
+	#define BUTTON_7_LONG 	  CMD_NOTHING
+	#define BUTTON_8_LONG 	  CMD_NOTHING
+
 
 	#define BUTTON_MULTI_01   CMD_NOTHING   //CMD_TOGGLE_WIFI_STATUS (disabled now to prevent children from unwanted WiFi-disable)
 	#define BUTTON_MULTI_02   CMD_ENABLE_FTP_SERVER
@@ -153,6 +180,7 @@
 	#define BUTTON_MULTI_34   CMD_NOTHING
 	#define BUTTON_MULTI_35   CMD_NOTHING
 	#define BUTTON_MULTI_45   CMD_NOTHING
+	
 
 	//#################### Various settings ##############################
 
@@ -169,17 +197,7 @@
 		#define DNS_IP     192,168,2,1                  // DNS-server of your network; in private networks it's usually the gatewy's IP
 	#endif
 
-	// Buttons (better leave unchanged if in doubts :-))
-	constexpr uint8_t buttonDebounceInterval = 50;                // Interval in ms to software-debounce buttons
-	constexpr uint16_t intervalToLongPress = 700;                 // Interval in ms to distinguish between short and long press of buttons
 
-	// Buttons active state: Default 0 for active LOW, 1 for active HIGH e.g. for TTP223 Capacitive Touch Switch Button (FinnBox)
-	#define BUTTON_0_ACTIVE_STATE 0
-	#define BUTTON_1_ACTIVE_STATE 0
-	#define BUTTON_2_ACTIVE_STATE 0
-	#define BUTTON_3_ACTIVE_STATE 0
-	#define BUTTON_4_ACTIVE_STATE 0
-	#define BUTTON_5_ACTIVE_STATE 0
 
 	//#define CONTROLS_LOCKED_BY_DEFAULT			// If set the controls are locked at boot
 	#define INCLUDE_ROTARY_IN_CONTROLS_LOCK			// If set the rotary encoder is locked if controls are locked
@@ -215,12 +233,12 @@
 	//#################### Settings for optional Modules##############################
 	// (optinal) Neopixel
 	#ifdef NEOPIXEL_ENABLE
-		#define NUM_INDICATOR_LEDS		24          	// number of Neopixel LEDs (formerly NUM_LEDS)
+		#define NUM_INDICATOR_LEDS		16          	// number of Neopixel LEDs (formerly NUM_LEDS)
 		#define NUM_CONTROL_LEDS		0		// optional control leds (https://forum.espuino.de/t/statische-ws2812-leds/1703)
                 #define CONTROL_LEDS_COLORS		{}		// Colors for the control LEDs. Make sure it lists at least NUM_CONTROL_LEDS colors, e.g. for three control LEDs define: CONTROL_LEDS_COLORS {CRGB::Yellow, CRGB::Blue, 0xFFFFFF} (predefined colors: http://fastled.io/docs/3.1/struct_c_r_g_b.html)
 		#define CHIPSET					WS2812B     	// type of Neopixel
 		#define COLOR_ORDER				GRB
-		#define NUM_LEDS_IDLE_DOTS		4           	// count of LEDs, which are shown when Idle
+		#define NUM_LEDS_IDLE_DOTS		3           	// count of LEDs, which are shown when Idle
 		#define OFFSET_PAUSE_LEDS		false		// if true the pause-leds are centered in the mid of the LED-Strip
 		#define PROGRESS_HUE_START		85          	// Start and end hue of mulitple-LED progress indicator. Hue ranges from basically 0 - 255, but you can also set numbers outside this range to get the desired effect (e.g. 85-215 will go from green to purple via blue, 341-215 start and end at exactly the same color but go from green to purple via yellow and red)
 		#define PROGRESS_HUE_END		-1
@@ -228,12 +246,12 @@
 		//#define LED_OFFSET                		0           	// shifts the starting LED in the original direction of the neopixel ring
 	#endif
 
-	#if defined(MEASURE_BATTERY_VOLTAGE) || defined(MEASURE_BATTERY_MAX17055)
+	#if defined(MEASURE_BATTERY_ESP32) || defined(MEASURE_BATTERY_MAX17055) || defined(MEASURE_BATTERY_BQ2589X)
 		#define BATTERY_MEASURE_ENABLE                 // Don't change. Set automatically if any method of battery monitoring is selected.
 		constexpr uint8_t s_batteryCheckInterval = 10; // How often battery is measured (in minutes) (can be changed via GUI!)
 	#endif
 
-	#ifdef MEASURE_BATTERY_VOLTAGE
+	#ifdef MEASURE_BATTERY_ESP32
 		// (optional) Default-voltages for battery-monitoring via Neopixel; can be changed later via WebGUI
 		constexpr float s_warningLowVoltage = 3.4;                      // If battery-voltage is <= this value, a cyclic warning will be indicated by Neopixel (can be changed via GUI!)
 		constexpr float s_warningCriticalVoltage = 3.1;                 // If battery-voltage is <= this value, assume battery near-empty. Set to 0V to disable.
@@ -258,7 +276,7 @@
 		#define USE_NCR18650A_OR_B
 		//#define USE_CGR18650CH_2250
 		//#define USE_Sanyo_18650_2600
-
+		constexpr uint16_t s_min_sys_voltage_mV = 3500;                      // Minimum system voltage in mV. Even if Batt voltage goes below the sys voltage will be kept at this value
 		constexpr uint16_t s_warningLowVoltage_mV = 3400;                      // If battery-voltage is <= this value, a cyclic warning will be indicated by Neopixel (can be changed via GUI!)
 		constexpr uint16_t s_warningCriticalVoltage_mV = 3100;                 // If battery-voltage is <= this value, assume battery near-empty. Set to 0V to disable.
 		constexpr uint8_t s_batteryLow_pct = 15;            			// low percentage
@@ -272,7 +290,7 @@
 	#endif // MEASURE_BATTERY_BQ2589X
 
 	// enable I2C if necessary
-	#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE) || defined(MEASURE_BATTERY_MAX17055)
+	#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE) || defined(MEASURE_BATTERY_MAX17055) || defined(MEASURE_BATTERY_BQ2589X) || defined(USE_SHIP_MODE_BQ2589X)
 		#define I2C_2_ENABLE
 	#endif
 

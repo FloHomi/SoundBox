@@ -64,6 +64,9 @@ void System_Init(void) {
 void System_Cyclic(void) {
 	System_SleepHandler();
 	System_DeepSleepManager();
+	
+
+
 }
 
 void System_UpdateActivityTimer(void) {
@@ -225,6 +228,12 @@ void System_DeepSleepManager(void) {
 		Log_Println(goToSleepNow, LOGLEVEL_NOTICE);
 		// prepare power down (shutdown common modules)
 		System_PreparePowerDown();
+
+#if defined (USE_SHIP_MODE_BQ2589X)
+		Log_Println("Ship-Mode, good night.......", LOGLEVEL_NOTICE);
+		// delay(2000);
+		BatteryManager.enter_ship_mode();
+#endif
 		// switch off power
 		Power_PeripheralOff();
 		// time to settle down..
@@ -238,11 +247,7 @@ void System_DeepSleepManager(void) {
 #endif
 		// goto sleep now
 		Log_Println("deep-sleep, good night.......", LOGLEVEL_NOTICE);
-#if defined (USE_SHIP_MODE_BQ2589X)
-		BatteryManager.enter_ship_mode();
-#else
 		esp_deep_sleep_start();
-#endif
 
 	}
 }

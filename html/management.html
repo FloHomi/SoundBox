@@ -440,8 +440,8 @@
 				<legend id="rfidMusicTagsAssignment"" data-i18n="files.rfid.title">RFID-Assignments</legend>
 			<form action="#rfidMusicTags" method="POST" onsubmit="rfidAssign('rfidMusicTags'); return false">
 				<div class="form-group col-md-12">
-					<label for="rfidIdMusic" data-i18n="files.rfid.idNumber">RFID-number (12 digits)</label>
-					<input type="text" class="form-control" id="rfidIdMusic" maxlength="12" pattern="[0-9]{12}"
+					<label for="rfidIdMusic" data-i18n="files.rfid.idNumber">RFID-number or ButtonID-number (12 digits)</label>
+					<input type="text" class="form-control" id="rfidIdMusic" maxlength="12" pattern="^[a-zA-Z0-9_]{1,12}$"
 						   placeholder="" name="rfidIdMusic" required>
 					<br>
 					<ul class="nav nav-tabs" id="SubTab" role="tablist" aria-labelledby="rfidMusicTagsAssignment">>

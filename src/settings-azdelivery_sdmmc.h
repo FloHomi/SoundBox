@@ -105,7 +105,7 @@
     #endif
 
     // (optional) Monitoring of battery-voltage via ADC
-    #ifdef MEASURE_BATTERY_VOLTAGE
+    #ifdef MEASURE_BATTERY_ESP32
         #define VOLTAGE_READ_PIN            99          // GPIO used to monitor battery-voltage.
         constexpr float referenceVoltage = 3.3;         // Voltage between 3.3V and GND-pin in battery-mode (disconnect USB!)
         constexpr float offsetVoltage = 0.0;            // If voltage measured by ESP isn't 100% accurate, you can add an correction-value here

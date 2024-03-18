@@ -43,8 +43,23 @@ bool gButtonInitComplete = false;
 #elif (BUTTON_5 >= 100 && BUTTON_5 <= 115)
 	#define EXPANDER_5_ENABLE
 #endif
+#if (BUTTON_6 >= 0 && BUTTON_6 <= MAX_GPIO)
+	#define BUTTON_6_ENABLE
+#elif (BUTTON_6 >= 100 && BUTTON_6 <= 115)
+	#define EXPANDER_6_ENABLE
+#endif
+#if (BUTTON_7 >= 0 && BUTTON_7 <= MAX_GPIO)
+	#define BUTTON_7_ENABLE
+#elif (BUTTON_7 >= 100 && BUTTON_7 <= 115)
+	#define EXPANDER_7_ENABLE
+#endif
+#if (BUTTON_8 >= 0 && BUTTON_8 <= MAX_GPIO)
+	#define BUTTON_8_ENABLE
+#elif (BUTTON_8 >= 100 && BUTTON_8 <= 115)
+	#define EXPANDER_8_ENABLE
+#endif
 
-t_button gButtons[7]; // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
+t_button gButtons[TOTAL_BUTTON_COUNT+1]; // next + prev + pplay + rotEnc + button4 + button5 + button6 + button7 + button8 + dummy_button
 uint8_t gShutdownButton = 99; // Helper used for Neopixel: stores button-number of shutdown-button
 uint16_t gLongPressTime = 0;
 
@@ -67,36 +82,53 @@ void Button_Init() {
 
 #ifdef NEOPIXEL_ENABLE // Try to find button that is used for shutdown via longpress-action (only necessary for Neopixel)
 	#if defined(BUTTON_0_ENABLE) || defined(EXPANDER_0_ENABLE)
-		#if (BUTTON_0_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 0;
-		#endif
+	if (BUTTON_0_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 0;
+	}
 	#endif
 	#if defined(BUTTON_1_ENABLE) || defined(EXPANDER_1_ENABLE)
-		#if (BUTTON_1_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 1;
-		#endif
+	if (BUTTON_1_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 1;
+	}
 	#endif
 	#if defined(BUTTON_2_ENABLE) || defined(EXPANDER_2_ENABLE)
-		#if (BUTTON_2_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 2;
-		#endif
+	if (BUTTON_2_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 2;
+	}
 	#endif
 	#if defined(BUTTON_3_ENABLE) || defined(EXPANDER_3_ENABLE)
-		#if (BUTTON_3_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 3;
-		#endif
+	if (BUTTON_3_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 3;
+	}
 	#endif
 	#if defined(BUTTON_4_ENABLE) || defined(EXPANDER_4_ENABLE)
-		#if (BUTTON_4_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 4;
-		#endif
+	if (BUTTON_4_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 4;
+	}
 	#endif
 	#if defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)
-		#if (BUTTON_5_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 5;
-		#endif
+	if (BUTTON_5_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 5;
+	}
 	#endif
-#endif
+	#if defined(BUTTON_6_ENABLE) || defined(EXPANDER_6_ENABLE)
+	if (BUTTON_6_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 6;
+	}
+	#endif
+	#if defined(BUTTON_7_ENABLE) || defined(EXPANDER_7_ENABLE)
+	if (BUTTON_7_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 7;
+	}
+	#endif
+	#if defined(BUTTON_8_ENABLE) || defined(EXPANDER_8_ENABLE)
+	if (BUTTON_8_LONG == CMD_SLEEPMODE){
+		gShutdownButton = 8;
+	}
+	#endif
+
+#endif	
+	Log_Printf(LOGLEVEL_INFO, "---------->  shutdown button %d, long %d, cmd %d", gShutdownButton, BUTTON_5_LONG,CMD_SLEEPMODE);
 
 // Activate internal pullups for all enabled buttons connected to GPIOs
 #ifdef BUTTON_0_ENABLE
@@ -181,6 +213,15 @@ void Button_Cyclic() {
 #endif
 #if defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)
 		gButtons[5].currentState = Port_Read(BUTTON_5) ^ BUTTON_5_ACTIVE_STATE;
+#endif
+#if defined(BUTTON_6_ENABLE) || defined(EXPANDER_6_ENABLE)
+		gButtons[6].currentState = Port_Read(BUTTON_6) ^ BUTTON_6_ACTIVE_STATE;
+#endif
+#if defined(BUTTON_7_ENABLE) || defined(EXPANDER_7_ENABLE)
+		gButtons[7].currentState = Port_Read(BUTTON_7) ^ BUTTON_7_ACTIVE_STATE;
+#endif
+#if defined(BUTTON_8_ENABLE) || defined(EXPANDER_8_ENABLE)
+		gButtons[8].currentState = Port_Read(BUTTON_8) ^ BUTTON_8_ACTIVE_STATE;
 #endif
 
 		// Iterate over all buttons in struct-array
@@ -268,7 +309,7 @@ void Button_DoButtonActions(void) {
 		gButtons[5].isPressed = false;
 		Cmd_Action(BUTTON_MULTI_45);
 	} else {
-		for (uint8_t i = 0; i <= 5; i++) {
+		for (uint8_t i = 0; i <= 8; i++) {
 			if (gButtons[i].isPressed) {
 				uint8_t Cmd_Short = 0;
 				uint8_t Cmd_Long = 0;
@@ -302,6 +343,21 @@ void Button_DoButtonActions(void) {
 					case 5:
 						Cmd_Short = BUTTON_5_SHORT;
 						Cmd_Long = BUTTON_5_LONG;
+						break;
+
+					case 6:
+						Cmd_Short = BUTTON_6_SHORT;
+						Cmd_Long = BUTTON_6_LONG;
+						break;
+						
+					case 7:
+						Cmd_Short = BUTTON_7_SHORT;
+						Cmd_Long = BUTTON_7_LONG;
+						break;
+						
+					case 8:
+						Cmd_Short = BUTTON_8_SHORT;
+						Cmd_Long = BUTTON_8_LONG;
 						break;
 				}
 

@@ -52,13 +52,15 @@ void Battery_InitInner() {
 	delay(50); // wait for the adc to be ready
 
 	err |= BatteryManager.disable_otg();
-	//BatteryManager.set_minSysVoltage(3500);  //not implemented in lib
+	//BatteryManager.set_sys_min(s_min_sys_voltage_mV);
 	err |= BatteryManager.set_charge_current(s_batteryChargeCurrent_mA);
 	err |= BatteryManager.set_chargevoltage(s_batteryChargeVoltage_mV);
 	if(err != BQ2589X_OK) {
 		Log_Println("BQ2589X configuration failed", LOGLEVEL_ERROR);
 		return;
 	}
+	Log_Println("BQ2589X init configuration done", LOGLEVEL_INFO);
+
 }
 
 void Battery_CyclicInner() {
@@ -108,7 +110,7 @@ float Battery_EstimateLevel(void)
 	// Get the measured voltage
 	uint16_t measured_voltage = BatteryManager.adc_read_battery_volt();
     // Ensure that the measured voltage is within the range of reference points
-    if (measured_voltage < estimator->voltage_ref_points_mV[0] || measured_voltage > estimator->voltage_ref_points_mV[SOC_ESTIMATION_REF_POINTS-1]) {
+    if (measured_voltage < estimator->voltage_ref_points_mV[0]){// || measured_voltage > estimator->voltage_ref_points_mV[SOC_ESTIMATION_REF_POINTS-1]) {
 		Log_Printf(LOGLEVEL_ERROR, "Measured voltage is outside the valid range\n");
         return -1;  // Or handle the error in a way suitable for your application
     }

@@ -23,14 +23,6 @@
 		//  (MOSI)    15  CMD
 		//  (SCK)     14  SCK
 		//  (MISO)     2  D0
-	#else
-		// SPI-SD IS NOT SUPPORTED BY THIS PCB
-		#define SPISD_CS		99		// GPIO for chip select (SD)
-		#ifndef SINGLE_SPI_ENABLE
-			#define SPISD_MOSI	99		// GPIO for master out slave in (SD) => not necessary for single-SPI
-			#define SPISD_MISO	99		// GPIO for master in slave ou (SD) => not necessary for single-SPI
-			#define SPISD_SCK	99		// GPIO for clock-signal (SD) => not necessary for single-SPI
-		#endif
 	#endif
 
 	// RFID (via SPI)
@@ -97,12 +89,8 @@
 	#define WAKEUP_BUTTON			4 		// Defines the button that is used to wake up ESPuino from deepsleep.
 
 	// (optional) Power-control
-	#define POWER 					101
-	#if !defined(POWER)
-	#define LOW_POWER				13         	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
-	#define HIGH_POWER				101          	// GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
-	#endif // !defined(POWER)
-	#if defined(LOW_POWER) || defined(HIGH_POWER) || defined (POWER)
+	#define POWER 					13
+	#if  defined(POWER)
 		#define INVERT_POWER				// If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
 		//#warning "use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH"
 	#endif
