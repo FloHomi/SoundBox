@@ -110,7 +110,7 @@ float Battery_EstimateLevel(void)
 	// Get the measured voltage
 	uint16_t measured_voltage = BatteryManager.adc_read_battery_volt();
     // Ensure that the measured voltage is within the range of reference points
-    if (measured_voltage < estimator->voltage_ref_points_mV[0] || measured_voltage > estimator->voltage_ref_points_mV[SOC_ESTIMATION_REF_POINTS-1]) {
+    if (measured_voltage < estimator->voltage_ref_points_mV[0]){// || measured_voltage > estimator->voltage_ref_points_mV[SOC_ESTIMATION_REF_POINTS-1]) {
 		Log_Printf(LOGLEVEL_ERROR, "Measured voltage is outside the valid range\n");
         return -1;  // Or handle the error in a way suitable for your application
     }
