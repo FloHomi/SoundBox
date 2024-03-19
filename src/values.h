@@ -59,6 +59,7 @@ typedef enum {
     CMD_TOGGLE_WIFI_STATUS = 130, // Toggles WiFi-status
     CMD_TOGGLE_BLUETOOTH_SINK_MODE = 140, // Toggles Normal/Bluetooth sink Mode
     CMD_TOGGLE_BLUETOOTH_SOURCE_MODE = 141, // Toggles Normal/Bluetooth source Mode
+    CMD_TOGGLE_MODE					= 142, // Toggles Normal => Bluetooth sink => Bluetooth source => Normal Mode
     CMD_ENABLE_FTP_SERVER = 150, // Enables FTP-server
     CMD_TELL_IP_ADDRESS = 151, // Command: ESPuino announces its IP-address via speech
     CMD_TELL_CURRENT_TIME = 152, // Command: ESPuino announces current time via speech
@@ -113,6 +114,7 @@ typedef enum {
     SEEK_NORMAL = 0, // Normal play
     SEEK_FORWARDS = 1, // Seek forwards
     SEEK_BACKWARDS = 2 // Seek backwards
+    SEEK_POS_PERCENT = 3 // Seek to position (0-100)
 } SeekModesType;
 
 // TTS
@@ -128,6 +130,6 @@ typedef enum {
 
 
 // Debug
-#define PRINT_TASK_STATS  900 // Prints task stats for debugging, needs CONFIG_FREERTOS_USE_TRACE_FACILITY=y and CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y in sdkconfig.defaults
+#define PRINT_TASK_STATS 199 // Prints task stats for debugging, needs CONFIG_FREERTOS_USE_TRACE_FACILITY=y and CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y in sdkconfig.defaults
 
 #endif // VALUES_H
