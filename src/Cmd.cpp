@@ -16,6 +16,7 @@
 
 
 void Cmd_Action(const uint16_t mod) {
+	Log_Printf(LOGLEVEL_INFO, "Cmd_Action: %d\n", mod);
 	switch (mod) {
 		case CMD_LOCK_BUTTONS_MOD: { // Locks/unlocks all buttons
 			System_ToggleLockControls();

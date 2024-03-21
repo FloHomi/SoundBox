@@ -207,18 +207,18 @@ void Port_WriteInitMaskForOutputChannels(void) {
 	configMaskForOutput(&ioMask, &stateMask, BUTTON2_LED, false);
 	#endif
 
-
+	Log_Printf(LOGLEVEL_DEBUG, "Port_WriteInitMaskForOutputChannels: ioMask: %u, stateMask: %u", ioMask, stateMask);
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-	i2cBusTwo.write(stateMask & 0xFF); // port0
-	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 
 	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-	i2cBusTwo.write(ioMask & 0xFF); // port0
-	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 	
 }
@@ -227,6 +227,19 @@ void Port_WriteInitMaskForOutputChannels(void) {
 void Port_MakeSomeChannelsOutputForShutdown(void) {
 	uint16_t ioMask = 0xFFFF; // 0xFFFF => all channels set to input;
 	uint16_t stateMask = 0x0000; // Bit configured as 0 for an output-channels means: logic LOW
+
+
+	// init status cache with values from HW
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x02); // Pointer to first output-register
+	i2cBusTwo.endTransmission(false);
+	i2cBusTwo.requestFrom(expanderI2cAddress, 2, true); // ...and read the contents
+	if (i2cBusTwo.available() == 2) {
+		stateMask = i2cBusTwo.read();
+		stateMask |= i2cBusTwo.read() << 8;
+	}
+
+	// Log_Printf(LOGLEVEL_DEBUG, "Port_MakeSomeChannelsOutputForShutdown: ioMask: %u, stateMask: %u", ioMask, stateMask);
 
 	#if defined(HP_DETECT) // https://forum.espuino.de/t/lolin-d32-pro-mit-sd-mmc-pn5180-max-fuenf-buttons-und-port-expander-smd/638/33
 	configMaskForOutput(&ioMask, &stateMask, HP_DETECT, false);
@@ -264,15 +277,15 @@ void Port_MakeSomeChannelsOutputForShutdown(void) {
 
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-	i2cBusTwo.write(stateMask & 0xFF); // port0
-	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 
 	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-	i2cBusTwo.write(ioMask & 0xFF); // port0
-	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 }
 
