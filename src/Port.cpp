@@ -238,7 +238,6 @@ void Port_MakeSomeChannelsOutputForShutdown(void) {
 		stateMask |= i2cBusTwo.read() << 8;
 	}
 
-
 	#if defined(HP_DETECT) // https://forum.espuino.de/t/lolin-d32-pro-mit-sd-mmc-pn5180-max-fuenf-buttons-und-port-expander-smd/638/33
 	configMaskForOutput(&ioMask, &stateMask, HP_DETECT, false);
 	#endif
