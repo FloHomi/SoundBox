@@ -17,6 +17,15 @@ void Power_PeripheralOn(void) {
 #ifdef BUTTONS_LED
 	Port_Write(BUTTONS_LED, HIGH, false);
 #endif
+#ifdef BUTTON0_LED
+	Port_Write(BUTTON0_LED, HIGH, false);
+#endif
+#ifdef BUTTON1_LED
+	Port_Write(BUTTON1_LED, HIGH, false);
+#endif
+#ifdef BUTTON2_LED
+	Port_Write(BUTTON2_LED, HIGH, false);
+#endif
 	delay(50); // Give peripherals some time to settle down
 }
 
@@ -25,5 +34,14 @@ void Power_PeripheralOff(void) {
 	Port_Write(POWER, POWER_OFF, false);
 #ifdef BUTTONS_LED
 	Port_Write(BUTTONS_LED, LOW, false);
+#endif
+#ifdef BUTTON0_LED
+	Port_Write(BUTTON0_LED, LOW, false);
+#endif
+#ifdef BUTTON1_LED
+	Port_Write(BUTTON1_LED, LOW, false);
+#endif
+#ifdef BUTTON2_LED
+	Port_Write(BUTTON2_LED, LOW, false);
 #endif
 }

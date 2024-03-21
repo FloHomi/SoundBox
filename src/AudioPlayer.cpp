@@ -847,7 +847,7 @@ void AudioPlayer_Task(void *parameter) {
 		}
 
 		// If error occured: move to the next track in the playlist
-		const bool activeMode = (gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != BUSY);
+		const bool activeMode = (gPlayProperties.playMode != NO_PLAYLIST && gPlayProperties.playMode != PLAYER_BUSY);
 		const bool noAudio = (!audio->isRunning() && !gPlayProperties.pausePlay);
 		const bool timeout = ((millis() - playbackTimeoutStart) > playbackTimeout);
 		if (activeMode) {

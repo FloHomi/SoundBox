@@ -191,12 +191,8 @@ void Port_WriteInitMaskForOutputChannels(void) {
 
 	#if defined(POWER) // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
 	configMaskForOutput(&ioMask, &stateMask, POWER, POWER_INVERT);
-
-	#elif defined(LOW_POWER) && defined(HIGH_POWER)
-	configMaskForOutput(&ioMask, &stateMask, LOW_POWER, POWER_INVERT);
-	configMaskForOutput(&ioMask, &stateMask, HIGH_POWER, POWER_INVERT);
-	#endif // defined(POWER)
-
+	#endif
+	
 	#if defined(BUTTONS_LED)
 	configMaskForOutput(&ioMask, &stateMask, BUTTONS_LED, false);
 	#endif
@@ -231,6 +227,18 @@ void Port_MakeSomeChannelsOutputForShutdown(void) {
 	uint16_t ioMask = 0xFFFF; // 0xFFFF => all channels set to input;
 	uint16_t stateMask = 0x0000; // Bit configured as 0 for an output-channels means: logic LOW
 
+
+	// init status cache with values from HW
+	i2cBusTwo.beginTransmission(expanderI2cAddress);
+	i2cBusTwo.write(0x02); // Pointer to first output-register
+	i2cBusTwo.endTransmission(false);
+	i2cBusTwo.requestFrom(expanderI2cAddress, 2, true); // ...and read the contents
+	if (i2cBusTwo.available() == 2) {
+		stateMask = i2cBusTwo.read();
+		stateMask |= i2cBusTwo.read() << 8;
+	}
+
+
 	#if defined(HP_DETECT) // https://forum.espuino.de/t/lolin-d32-pro-mit-sd-mmc-pn5180-max-fuenf-buttons-und-port-expander-smd/638/33
 	configMaskForOutput(&ioMask, &stateMask, HP_DETECT, false);
 	#endif
@@ -246,10 +254,6 @@ void Port_MakeSomeChannelsOutputForShutdown(void) {
 
 	#if defined(POWER) // Set as output to trigger mosfet/power-pin for powering peripherals. Hint: logic is inverted if INVERT_POWER is enabled.
 	configMaskForOutput(&ioMask, &stateMask, POWER, POWER_INVERT);
-	#endif
-	#if defined(LOW_POWER) && defined(HIGH_POWER)
-	configMaskForOutput(&ioMask, &stateMask, LOW_POWER, POWER_INVERT);
-	configMaskForOutput(&ioMask, &stateMask, HIGH_POWER, POWER_INVERT);
 	#endif
 
 	#if defined(BUTTONS_LED)

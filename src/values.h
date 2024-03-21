@@ -113,7 +113,7 @@ typedef enum {
 typedef enum {
     SEEK_NORMAL = 0, // Normal play
     SEEK_FORWARDS = 1, // Seek forwards
-    SEEK_BACKWARDS = 2 // Seek backwards
+    SEEK_BACKWARDS = 2, // Seek backwards
     SEEK_POS_PERCENT = 3 // Seek to position (0-100)
 } SeekModesType;
 
