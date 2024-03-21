@@ -206,18 +206,18 @@ void Port_WriteInitMaskForOutputChannels(void) {
 	configMaskForOutput(&ioMask, &stateMask, BUTTON2_LED, false);
 	#endif
 
-
+	Log_Printf(LOGLEVEL_DEBUG, "Port_WriteInitMaskForOutputChannels: ioMask: %u, stateMask: %u", ioMask, stateMask);
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-	i2cBusTwo.write(stateMask & 0xFF); // port0
-	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 
 	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-	i2cBusTwo.write(ioMask & 0xFF); // port0
-	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 	
 }
@@ -271,15 +271,15 @@ void Port_MakeSomeChannelsOutputForShutdown(void) {
 
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x06); // Pointer to configuration of input/output
-	i2cBusTwo.write(stateMask & 0xFF); // port0
-	i2cBusTwo.write(stateMask >> 8); // port1
+	i2cBusTwo.write(ioMask & 0xFF); // port0
+	i2cBusTwo.write(ioMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 
 	// Write low/high-config to all output-channels. Channels that are configured as input are silently/automatically ignored by PCA9555
 	i2cBusTwo.beginTransmission(expanderI2cAddress);
 	i2cBusTwo.write(0x02); // Pointer to configuration of output-channels (high/low)
-	i2cBusTwo.write(ioMask & 0xFF); // port0
-	i2cBusTwo.write(ioMask >> 8); // port1
+	i2cBusTwo.write(stateMask & 0xFF); // port0
+	i2cBusTwo.write(stateMask >> 8); // port1
 	i2cBusTwo.endTransmission();
 }
 

@@ -128,7 +128,7 @@ void Button_Init() {
 	#endif
 
 #endif	
-	Log_Printf(LOGLEVEL_INFO, "---------->  shutdown button %d, long %d, cmd %d", gShutdownButton, BUTTON_5_LONG,CMD_SLEEPMODE);
+	Log_Printf(LOGLEVEL_INFO, "---------->  shutdown button %d", gShutdownButton);
 
 // Activate internal pullups for all enabled buttons connected to GPIOs
 #ifdef BUTTON_0_ENABLE
