@@ -52,6 +52,8 @@ void Battery_InitInner() {
 	delay(50); // wait for the adc to be ready
 
 	err |= BatteryManager.disable_otg();
+	err |= BatteryManager.disable_watchdog_timer(); // Disable watchdog to prevent charging resets
+	err |= BatteryManager.set_input_current_limit(2000); // Set input current limit to 2A for faster charging
 	//BatteryManager.set_sys_min(s_min_sys_voltage_mV);
 	err |= BatteryManager.set_charge_current(s_batteryChargeCurrent_mA);
 	err |= BatteryManager.set_chargevoltage(s_batteryChargeVoltage_mV);
@@ -65,14 +67,13 @@ void Battery_InitInner() {
 
 void Battery_CyclicInner() {
 	
+	//TODO: THis is called less than every minute, so the watchdog might not be reset in time
 	static uint32_t lastWatchdogResetTimestamp = 0;
 	//reset whatchdog every couple sec. (10s) to prevent reset
 	if(millis() - lastWatchdogResetTimestamp > 10000) {
 		lastWatchdogResetTimestamp = millis();
 		BatteryManager.reset_watchdog_timer();
 	}
-	
-	
 }
 
 float Battery_GetVoltage(void) {
@@ -98,8 +99,8 @@ void Battery_LogStatus(void) {
 	Log_Printf(LOGLEVEL_INFO, currentBattVoltageMsg, Battery_GetVoltage());
 	Log_Printf(LOGLEVEL_INFO, currentSysVoltageMsg, BatteryManager.adc_read_sys_volt()/1000.0);
 	Log_Printf(LOGLEVEL_INFO, currentChargeMsg, Battery_EstimateLevel() * 100);
-	Log_Printf(LOGLEVEL_INFO, batteryCurrentMsg, BatteryManager.adc_read_charge_current());
-	Log_Printf(LOGLEVEL_INFO, batteryTempMsg, BatteryManager.adc_read_temperature());
+	Log_Printf(LOGLEVEL_INFO, batteryCurrentMsg, (float)BatteryManager.adc_read_charge_current());
+	Log_Printf(LOGLEVEL_INFO, batteryTempMsg, (float)BatteryManager.adc_read_temperature());
 
 }
 

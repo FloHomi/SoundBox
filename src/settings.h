@@ -248,7 +248,7 @@
 
 	#if defined(MEASURE_BATTERY_ESP32) || defined(MEASURE_BATTERY_MAX17055) || defined(MEASURE_BATTERY_BQ2589X)
 		#define BATTERY_MEASURE_ENABLE                 // Don't change. Set automatically if any method of battery monitoring is selected.
-		constexpr uint8_t s_batteryCheckInterval = 10; // How often battery is measured (in minutes) (can be changed via GUI!)
+		constexpr uint8_t s_batteryCheckInterval = 1; // How often battery is measured (in minutes) (can be changed via GUI!)
 	#endif
 
 	#ifdef MEASURE_BATTERY_ESP32

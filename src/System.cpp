@@ -229,9 +229,20 @@ void System_DeepSleepManager(void) {
 		System_PreparePowerDown();
 
 #if defined (USE_SHIP_MODE_BQ2589X)
-		Log_Println("Ship-Mode, good night.......", LOGLEVEL_NOTICE);
 		// delay(2000);
-		BatteryManager.enter_ship_mode();
+		uint8_t reg0b = 0;
+		BatteryManager.read_byte(&reg0b, 0x0B);		
+		// Parse REG0B
+		uint8_t vbus_stat = (reg0b >> 5) & 0x07;
+		if(vbus_stat == BQ2589X_VBUS_NONE)
+		{
+			Log_Println("Ship-Mode, good night.......", LOGLEVEL_NOTICE);
+			BatteryManager.enter_ship_mode();
+		}
+		else
+		{
+			Log_Println("will not enter Ship-Mode, USB charging detected", LOGLEVEL_NOTICE);
+		}
 #endif
 		// switch off power
 		Power_PeripheralOff();
